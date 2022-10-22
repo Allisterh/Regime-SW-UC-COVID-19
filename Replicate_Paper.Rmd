@@ -29,7 +29,7 @@ source("Scripts/Init.R")
 Start_Date = "2020-04-1"
 End_Date = "2022-08-31"
 Model_Spec = "UC_Model"
-Init_fctn(Start_Date, End_Date)
+Init_fctn(Start_Date, End_Date, Country = "US")
 ```
 
 #### 3. Search for the perfect parameters
@@ -72,7 +72,7 @@ Tables_fctn(Model_output = Model_output_list, Model = Model_Spec)
 
 This code chunk produces diagnostic plots of the one-step-ahead prediction errors, their AC-function, the difference between smoothed trend and log infections over time as well as the seasonal component. All figures are stored in the folder (/"Model_Spec"_Diagnostics) within the working directory.
 
-```{r include=FALSE}
+```{r echo=TRUE, `results = FALSE`}
 source("Scripts/Diagnostics.R")
 Diagnostics_fctn(Data_tib = Data, Model_output = Model_output_list, Model = Model_Spec)
 ```
