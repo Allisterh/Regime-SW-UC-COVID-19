@@ -1,0 +1,157 @@
+#' @description Function to constrain a parameter vector to the relevant parameter space for the model specification with
+#' regime induced AR cycle heterogeneity
+#' @param par vector of unconstrained parameters
+#' @returns a vector of constrained parameters
+
+ParConstrain_fctn <- function(par) {
+  constrPar <- par <- as.numeric(par)
+  # Assures positive sd of system innovations
+  constrPar[1:4] <- exp(par[1:4])
+  # Defines regimes by nu_1 < 0
+  constrPar[5] <- -exp(par[5])
+  # Assures stationary AR(2) cycle
+  phi_1 <- 2 * par[6] / (1 + abs(par[6]))
+  phi_2 <- -(1 - abs(phi_1)) * par[7] / (1 + abs(par[7])) - abs(phi_1)
+  constrPar[6] <- phi_1
+  constrPar[7] <- phi_2
+  # Constrains probabilities to >=0 & <=1
+  constrPar[8:9] <- 1 / (1 + exp(par[8:9]))
+  return(constrPar)
+}
+
+
+#' @description Function that reverses the ParConstrain_fctn to correct for the SE calculation for the model specification with
+#' regime induced AR cycle heterogeneity
+#' @param par vector of constrained parameters
+#' @returns a diagonal matrix with the correction factors
+
+InvParConstrain_fctn <- function(par) {
+  correction <- rep(1, length(par))
+  # Assures positive sd of system innovations
+  correction[1:5] <- diag(numDeriv::jacobian(exp, par[1:5]))
+  # Defines regimes by nu_1 < 0
+  correction[5] <- -correction[5]
+  # Assures stationary AR(2) cycle
+  correction[6] <- numDeriv::jacobian(function(phi_1) 2 * phi_1 / (1 + abs(phi_1)), par[6])
+  correction[7] <- numDeriv::jacobian(function(phi_1, phi_2) {
+    -sum(((1 - abs(2 * phi_1 / (1 + abs(phi_1)))) * phi_2) / (1 + abs(phi_2)),
+         2 * phi_1 / (1 + phi_1))
+  }, x = par[6] / 2, y = par[7])
+  # Constrains probabilities to >=0 & <=1
+  correction[8:9] <- diag(numDeriv::jacobian(function(x) 1 / (1 + exp(x)), par[8:9]))
+  correctionMat <- diag(correction)
+  return(correctionMat)
+}
+
+
+#' @description Function that sets up a list with additional parameters for the filter
+#' @param par vector of parameters
+#' @param constrainPar logical. If yes, the parameter constraining function for the numerical optimization
+#' is applied
+#' @return a list with the additional parameters
+
+ParList_fctn <- function(par, constrainPar) {
+  if (constrainPar == TRUE) {
+    # Reverse parameter transformation
+    par <- ParConstrain_fctn(par)
+  }
+  # Load input (provided constraining function is already reversed)
+  xi <- par[1] # Sd of innovations to trend component
+  omega <- par[2] # Sd of innovations to the seasonal component
+  eta_0 <- par[3] # Sd of innovations to the cycle component in regime 0
+  eta_1 <- par[4] # Sd of innovations to the cycle component in regime 1
+  nu_1 <- par[5] # Additional drift for down-turning regime 1
+  phi_1 <- par[6] # AR covariate of the cycle
+  phi_2 <- par[7] # AR covariate of the cycle
+  q <- par[8] # Probability of staying in regime 0
+  p <- par[9] # Probability of staying in regime 1
+  
+  # Create the output list
+  paramList <- list()
+  paramList$xi$xi_0 <- paramList$xi$xi_1 <- xi
+  paramList$omega$omega_0 <- paramList$omega$omega_1 <- omega
+  paramList$epsilon <- 0
+  paramList$nu_1 <- nu_1
+  paramList$Probs$q <- q
+  paramList$Probs$p <- p
+  paramList$eta$eta_0 <- eta_0
+  paramList$eta$eta_1 <- eta_1
+  paramList$phi <- c(phi_1, phi_2)
+  
+  return(paramList)
+}
+
+
+#' @description Function that sets up a list with system matrices for the filter
+#' @param paramList list with the additional parameters
+#' @return a list with the system matrices
+
+SystemMat_fctn <- function(paramList) {
+  # Transition matrix
+  Tt_trend <- matrix(c(1, 1, 0, 1), byrow = T, nc = 2)
+  Tt_cycle <- matrix(c(paramList$phi, 1, 0), byrow = T, nc = 2)
+  Tt_seasDeterm <- rbind(rep(-1, 6), cbind(diag(5), rep(0, 5)))
+  # Add the transition eqn for the seasonal unit root in the seasonal errors
+  Tt_seasUr <- rbind(c(rep(0, 6), 1), cbind(diag(6), rep(0, 6)))
+  Tt <- as.matrix(bdiag(Tt_trend, Tt_cycle, Tt_seasDeterm, Tt_seasUr))
+  # allows the seasonal unit root to load on gamma_t+1
+  Tt[5, 11] <- 1
+  Dimens <- NCOL(Tt)
+  # Measurement matrix
+  Z <- matrix(c(1, 0, 1, 0, 1, rep(0, Dimens - 5)), 1, Dimens)
+  # Matrix to expand Q so that it matches Var matrix of state vector
+  R <- cbind(
+    c(1, rep(0, Dimens - 1)),
+    c(rep(0, 2), 1, rep(0, Dimens - 3)),
+    c(rep(0, 10), 1, rep(0, Dimens - 11))
+  )
+  # Create the output list
+  systemList <- list()
+  systemList$Tt <- Tt
+  systemList$Z <- Z
+  systemList$R <- R
+  
+  return(systemList)
+}
+
+
+#' @description Function that constructs the model specific random parameter table for the model specification with regime induced cycle
+#' heterogeneity
+#' @param nRandom number of random parameter vectors
+#' @return tibble with the random parameter vectors
+
+ThetaRand_fctn <- function(nRandom) {
+  thetaRand <- tibble(
+    xi = log(runif(nRandom, 0.01, 0.25)),
+    omega = log(runif(nRandom, 0, 0.3)),
+    eta_0 = log(runif(nRandom, 0.01, 0.3)),
+    eta_1 = log(runif(nRandom, 0.01, 0.3)),
+    nu_1 = log(runif(nRandom, 0.001, 0.3)),
+    phi_1 = runif(nRandom, -7, 7),
+    phi_2 = runif(nRandom, -7, 7),
+    q = runif(nRandom, -5, 5),
+    p = runif(nRandom, -5, 5)
+  )
+  return(thetaRand)
+}
+
+
+#' @description Function that constructs the model specific label map for the model specification with regime induced cycle
+#' heterogeneity
+#' @return label map
+
+LabelMap_fctn <- function() {
+  labelMap <- expression(
+    xi = sigma[xi],
+    omega = sigma[omega],
+    eta_0 = sigma[eta][0],
+    eta_1 = sigma[eta][1],
+    nu_0 = nu[0],
+    nu_1 = nu[1],
+    phi_1 = Phi[1],
+    phi_2 = Phi[2],
+    p = italic(p),
+    q = italic(q)
+  )
+  return(labelMap)
+}

@@ -17,63 +17,73 @@ In case of questions or if you encounter a bug, please feel free to reach out or
 Note that the folder "Scripts" as well as the folder holding the grid search results have to be stored in the working directory.
 
 ```{r}
+rm(list=ls())
 #setwd()
 ```
 
 #### 2. Initialize the environment
 
-Load packages as well as the data on COVID-19 infections by executing the initialization function. The string "Model_Spec" indicates which UC-model to run and has to equal the file name of the script storing the Kim filter functions in the "Scripts" folder.
+Load packages as well as the data on COVID-19 infections by executing the initialization function. The string "Model_Spec" indicates which UC-model to run and has to equal the file name of the script storing the Kim filter functions in the "R" folder.
 
 ```{r message=FALSE, warning=TRUE}
-source("Scripts/Init.R")
-Start_Date = "2020-04-1"
-End_Date = "2022-08-31"
-Model_Spec = "UC_Model"
-Init_fctn(Start_Date, End_Date, Country = "US")
+source("R/0_Init.R")
+startDate = "2020-04-1"
+endDate = "2022-12-31"
+country = "US"
+modelSpec = "UCModel"
+#modelSpec = "DetermSeas"
+#modelSpec = "ThreeState"
+#modelSpec = "TrendVar"
+#modelSpec = "Endogen"
+#modelSpec = "ARCycleVar"
+#modelSpec = "MACycle"
+Init_fctn(modelSpec, startDate, endDate, country)
 ```
 
 #### 3. Search for the perfect parameters
 
-This function executes the 3-step grid search routine. Note that the grid search results as used in in the paper are already provided in the repository. Running the grid search is computationally intensive and may require up to 14 hours to complete. If you run the grid search, the results are stored in the folder /"Model_Spec"_Gridsearch within the working directory.
+This function executes the 3-step grid search routine. Note that the grid search results as used in in the paper are already provided in the repository. Running the grid search is computationally intensive and may require up to 14 hours to complete. If you run the grid search, the results are stored in the folder /"Model_Spec"\_Output/GridSearch within the working directory.
 
 ```{r}
-source("Scripts/Grid_search.R")
-Grid_search_fctn(Model = Model_Spec, n_random = 3e04, steps_grid = 6)
+GridSearch_fctn(model = modelSpec, data = dataVec, trendIni = trendIni, nRandom = 3e04, stepsGrid = 6)
 ```
 
 #### 4. Apply the model
 
-The following step employs the grid search results to run the Kim filter and smoother recursions. All relevant output is collected in the Model_output_list.
+The following step employs the grid search results to run the Kim filter and smoother recursions. All relevant output is collected in the modelOutputList.
 
 ```{r}
-source("Scripts/Application.R")
-Model_output_list <- Model_application_fctn(Model = Model_Spec)
+modelOutputList <- ModelApplication_fctn(model = modelSpec, data = dataVec, trendIni = trendIni, dataTib = dataTib)
 ```
 
-#### 5. Visualize the findings
+#### 5. Run the nowcasting simulation
 
-This code chunk uses the model output to reproduce the figures in the paper. The figures are stored in the folder /"Model_Spec"_Figures.
+Next, we simulate the performance of our model in a simulated nowcasting exercise. The parameter estimates are based on increasing subsets of the total observational horizon. The nowcasted values reflect the one-step-ahead predictions of the Kim filter. The output is stored int he folder /"Model_Spec"\_Output/Nowcasting.
 
 ```{r}
-source("Scripts/Figures.R")
-Plots_fctn(Data_tib = Data_raw, Model_output = Model_output_list, Model = Model_Spec)
+Nowcasting_fctn(model = modelSpec, data = dataVec, trendIni = trendIni, dataTib = dataTib, iniPeriod = 150, estimInterval = 3, gridSearchInterval = 150)
 ```
 
-#### 6. Report the estimates
+#### 6. Visualize the findings
 
-Tables 1 and 2 may be recreated by running the following block. An .xlsx book with the all entries of the tables as well as the various regime indicators as reported below table 1 will be created in the folder /"Model_Spec"_Tables.
+This code chunk uses the model output to reproduce the figures in the paper. The figures are stored in the folder /"Model_Spec"\_Output/Figures.
 
 ```{r}
-source("Scripts/Tables.R")
-Tables_fctn(Model_output = Model_output_list, Model = Model_Spec)
+Figures_fctn(model = modelSpec, modelOutput = modelOutputList, dataTib = dataTib, dataExten = dataTibExten)
 ```
 
-#### 7. Run further diagnostics
+#### 7. Report the estimates
 
-This code chunk produces diagnostic plots of the one-step-ahead prediction errors, their AC-function, the difference between smoothed trend and log infections over time as well as the seasonal component. All figures are stored in the folder (/"Model_Spec"_Diagnostics) within the working directory.
+Tables 1 and 2 may be recreated by running the following block. An .xlsx book with the all entries of the tables as well as the various regime indicators as reported below table 1 will be created in the folder /"Model_Spec"\_Output/Tables.
 
-```{r echo=TRUE, `results = FALSE`}
-source("Scripts/Diagnostics.R")
-Diagnostics_fctn(Data_tib = Data, Model_output = Model_output_list, Model = Model_Spec)
+```{r}
+Tables_fctn(model = modelSpec, modelOutput = modelOutputList)
 ```
 
+#### 8. Run further diagnostics
+
+This code chunk produces diagnostic plots of the one-step-ahead prediction errors, their AC-function, the difference between smoothed trend and log infections over time as well as the seasonal component. All figures are stored in the folder (/"Model_Spec"\_Output/Diagnostics) within the working directory.
+
+```{r}
+Diagnostics_fctn(model = modelSpec, dataTib = dataTib, modelOutput = modelOutputList)
+```
