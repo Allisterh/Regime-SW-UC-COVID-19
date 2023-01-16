@@ -80,7 +80,7 @@ SmootherRecursions_fctn <- function(filterOutput, systemList, paramList, ciInter
   # Kim smoother (backwards) iteration
   #---------------------------------------------------------------------------------------#
   seasLength <- 7
-  for (i in (periods - 1):(seasLength - 2)) {
+  for (i in (periods - 1):1) {
     # Load necessary filtered values for each iteration
     # Updated probabilities
     # (t|t)
