@@ -59,7 +59,7 @@ ParList_fctn <- function(par, constrainPar) {
   paramList$Probs$q <- q
   paramList$Probs$p <- p
   paramList$eta$eta_0 <- paramList$eta$eta_1 <- 0
-  
+
   return(paramList)
 }
 
@@ -84,7 +84,7 @@ SystemMat_fctn <- function(paramList = NULL) {
   systemList$Tt <- Tt
   systemList$Z <- Z
   systemList$R <- R
-  
+
   return(systemList)
 }
 
@@ -118,4 +118,39 @@ LabelMap_fctn <- function() {
     q = italic(q)
   )
   return(labelMap)
+}
+
+
+#' @description Function that draws the additional parameters as part of the Gibbs sampler
+#' @param data vector for which the likelihood values are to be computed
+#' @param stateVec array with draws of the state vector
+#' @param regimeVec vector with regime realizations. Vector takes either values 1 or 0
+#' @param paramList list with the additional parameters
+#' @return tibble with the random parameter vectors
+
+Additionalparam_fctn <- function(data, stateVec, regimeVec, paramList) {
+  # epsilon
+  paramList$epsilon <- SdEpsilon_fctn(data = data, stateVec = stateVec, regimeVec = regimeVec)
+  # xi
+  paramList$xi$xi_0 <- paramList$xi$xi_1 <- SdXi_fctn(data = data, stateVec = stateVec, regimeVec = regimeVec, paramList = paramList)
+  # nu_1
+  paramList$nu_1 <- Nu_1_fctn(stateVec = stateVec, regimeVec = regimeVec, paramList = paramList)
+  # p and q
+  transProbs <- TransProbs_fctn(regimeVec = regimeVec, paramList = paramList)
+  paramList$Probs$q <- transProbs[1]
+  paramList$Probs$p <- transProbs[2]
+
+  return(paramList)
+}
+
+
+#' @description Produces a vector of additional parameters from a list
+#' @param paramList standardized list of additional parameters
+#' @return vector with relevant parameters
+
+outputParam_fctn <- function(paramList) {
+  return(c(
+    "xi" = paramList$xi$xi_0, "epsilon" = paramList$epsilon,
+    "nu_1" = paramList$nu_1, "q" = paramList$Probs$q, "p" = paramList$Probs$p
+  ))
 }

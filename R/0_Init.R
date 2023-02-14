@@ -22,7 +22,7 @@ Init_fctn <- function(model, startDate, endDate, country, province = NULL) {
   cat("Loading packages \n")
   # Install and or load packages
   packages <- c(
-    "Rcpp", "RcppArmadillo", "pbapply", "Matrix", "tfarima", "MCMCpack", "mvtnorm", 
+    "Rcpp", "RcppArmadillo", "pbapply", "Matrix", "tfarima", "MCMCpack", "mvtnorm", "coda", "progress",
     "tidyverse", "readr", "lubridate", "scales", "openxlsx"
   )
   sapply(packages, Package_fctn)
@@ -35,7 +35,7 @@ Init_fctn <- function(model, startDate, endDate, country, province = NULL) {
     ))
   }
   # Load functions
-  cat("Sourcing functions \n")
+  cat("Compiling functions \n")
   RScripts <- paste0("R/", list.files(path = paste0(getwd(), "/R")))
   RScripts <- RScripts[!str_detect(RScripts, "Models")]
   models <- list.files(path = paste0(getwd(), "/R/Models"))

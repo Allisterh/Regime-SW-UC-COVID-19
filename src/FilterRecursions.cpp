@@ -9,7 +9,7 @@ using namespace arma;
 //' @param var diagonal mat with the variances
 //' @returns row vector with the densities
 
-double dnorm_fctn(double x, double var)
+double dnormVar_fctn(double x, double var)
 {
    double dens = R::dnorm4(x, 0, sqrt(var), FALSE);
    return dens;
@@ -113,7 +113,7 @@ List FilterRecursions_fctn(vec data, double Ini, List systemList, List paramList
    vec a_t_clt_11 = a_t_clt_01;
 
    // Initial variance matrix for state vector (Exact diffuse initialization)
-   vec P_t_vec(Dimens, fill::value(10000));
+   vec P_t_vec(Dimens, fill::value(1000));
    mat P_t_clt_00 = diagmat(P_t_vec);
    mat P_t_clt_10 = diagmat(P_t_vec);
    mat P_t_clt_01 = diagmat(P_t_vec);
@@ -121,7 +121,7 @@ List FilterRecursions_fctn(vec data, double Ini, List systemList, List paramList
 
    // Initializes log-likelihood to record values
    double logLik_T;
-   //Initializes output objects
+   // Initializes output objects
    mat a_t_clt;
    mat P_t_clt;
    mat a_t_ct;
@@ -166,18 +166,22 @@ List FilterRecursions_fctn(vec data, double Ini, List systemList, List paramList
    double Pr_ct_10;
    double Pr_ct_01;
    double Pr_ct_11;
-   vec Pr_ct_0_vec;
-   vec Pr_ct_1_vec;
+   double Pr_ct_0_raw;
+   double Pr_ct_1_raw;
    vec a_t_ct_0;
    vec a_t_ct_1;
    mat P_t_ct_0;
    mat P_t_ct_1;
-   vec v_t;
-   vec F_t;
+   rowvec v_t;
+   rowvec F_t;
    double Pr_clt_0;
    double Pr_clt_1;
-   vec Pr_clt;
-   vec Pr_ct;
+   rowvec Pr_clt;
+   rowvec Pr_ct;
+   mat K_t_00;
+   mat K_t_10;
+   mat K_t_01;
+   mat K_t_11;
    double logLik_t;
 
    // Begin the filtering routine
@@ -203,17 +207,23 @@ List FilterRecursions_fctn(vec data, double Ini, List systemList, List paramList
 
       // Updating step
       // (t|t, S_t, S_t-1)
+      // Kalman gain
+      K_t_00 = P_t_clt_00 * transZ * (1 / F_t_00);
+      K_t_10 = P_t_clt_10 * transZ * (1 / F_t_10);
+      K_t_01 = P_t_clt_01 * transZ * (1 / F_t_01);
+      K_t_11 = P_t_clt_11 * transZ * (1 / F_t_11);
+
       // State vector
-      a_t_ct_00 = a_t_clt_00 + P_t_clt_00 * transZ * (1 / F_t_00 * v_t_00);
-      a_t_ct_10 = a_t_clt_10 + P_t_clt_10 * transZ * (1 / F_t_10 * v_t_10);
-      a_t_ct_01 = a_t_clt_01 + P_t_clt_01 * transZ * (1 / F_t_01 * v_t_01);
-      a_t_ct_11 = a_t_clt_11 + P_t_clt_11 * transZ * (1 / F_t_11 * v_t_11);
+      a_t_ct_00 = a_t_clt_00 + K_t_00 * v_t_00;
+      a_t_ct_10 = a_t_clt_10 + K_t_10 * v_t_10;
+      a_t_ct_01 = a_t_clt_01 + K_t_01 * v_t_01;
+      a_t_ct_11 = a_t_clt_11 + K_t_11 * v_t_11;
 
       // State vector Var-Matrix
-      P_t_ct_00 = P_t_clt_00 - P_t_clt_00 * transZ * (1 / F_t_00) * Z * P_t_clt_00;
-      P_t_ct_10 = P_t_clt_10 - P_t_clt_10 * transZ * (1 / F_t_10) * Z * P_t_clt_10;
-      P_t_ct_01 = P_t_clt_01 - P_t_clt_01 * transZ * (1 / F_t_01) * Z * P_t_clt_01;
-      P_t_ct_11 = P_t_clt_11 - P_t_clt_11 * transZ * (1 / F_t_11) * Z * P_t_clt_11;
+      P_t_ct_00 = P_t_clt_00 - K_t_00 * Z * P_t_clt_00;
+      P_t_ct_10 = P_t_clt_10 - K_t_10 * Z * P_t_clt_10;
+      P_t_ct_01 = P_t_clt_01 - K_t_01 * Z * P_t_clt_01;
+      P_t_ct_11 = P_t_clt_11 - K_t_11 * Z * P_t_clt_11;
 
       //-------------------//
       // Hamilton part     //
@@ -227,16 +237,17 @@ List FilterRecursions_fctn(vec data, double Ini, List systemList, List paramList
       Pr_clt_11 = p * Pr_ct_1;
 
       // Density of y_t conditional on states (given by prediction error and prediction error variance from Kalman part)
-      y_dens_clt_00 = dnorm_fctn(v_t_00, F_t_00);
-      y_dens_clt_10 = dnorm_fctn(v_t_10, F_t_10);
-      y_dens_clt_01 = dnorm_fctn(v_t_01, F_t_01);
-      y_dens_clt_11 = dnorm_fctn(v_t_11, F_t_11);
+      y_dens_clt_00 = dnormVar_fctn(v_t_00, F_t_00);
+      y_dens_clt_10 = dnormVar_fctn(v_t_10, F_t_10);
+      y_dens_clt_01 = dnormVar_fctn(v_t_01, F_t_01);
+      y_dens_clt_11 = dnormVar_fctn(v_t_11, F_t_11);
       // Adjust the densities in case of endogenous switching
-      if (endogen == true) {
-      y_dens_clt_00 = y_dens_clt_00 * pnorm_fctn((-beta_0 - varrho * (v_t_00 / sqrt(F_t_00))) / sqrt(1 - pow(varrho, 2))) / q;
-      y_dens_clt_10 = y_dens_clt_10 * pnorm_fctn((-beta_0 - beta_1 - varrho * (v_t_10 / sqrt(F_t_10))) / sqrt(1 - pow(varrho, 2))) / (1 - p);
-      y_dens_clt_01 = y_dens_clt_01 * pnorm_fctn((beta_0 - varrho * (v_t_01 / sqrt(F_t_01))) / sqrt(1 - pow(varrho, 2))) / (1 - q);
-      y_dens_clt_11 = y_dens_clt_11 * pnorm_fctn((beta_0 + beta_1 - varrho * (v_t_11 / sqrt(F_t_11))) / sqrt(1 - pow(varrho, 2))) / p;
+      if (endogen == true)
+      {
+         y_dens_clt_00 = y_dens_clt_00 * pnorm_fctn((-beta_0 - varrho * (v_t_00 / sqrt(F_t_00))) / sqrt(1 - pow(varrho, 2))) / q;
+         y_dens_clt_10 = y_dens_clt_10 * pnorm_fctn((-beta_0 - beta_1 - varrho * (v_t_10 / sqrt(F_t_10))) / sqrt(1 - pow(varrho, 2))) / (1 - p);
+         y_dens_clt_01 = y_dens_clt_01 * pnorm_fctn((beta_0 - varrho * (v_t_01 / sqrt(F_t_01))) / sqrt(1 - pow(varrho, 2))) / (1 - q);
+         y_dens_clt_11 = y_dens_clt_11 * pnorm_fctn((beta_0 + beta_1 - varrho * (v_t_11 / sqrt(F_t_11))) / sqrt(1 - pow(varrho, 2))) / p;
       }
 
       // Sum up joint densities of y_t and regimes to integrate out regime dependencies (receive density of y_t conditional on all information at
@@ -252,13 +263,13 @@ List FilterRecursions_fctn(vec data, double Ini, List systemList, List paramList
 
       // Sum up updated probabilities over possible realizations at t-1 to get regime probability at t only conditional on information at time t
       // Floor at 1e-10 makes filter more robust and guarantees the scalar Pr_ct_x to be invertible
-      Pr_ct_0_vec = {Pr_ct_00 + Pr_ct_10, 1e-10};
-      Pr_ct_1_vec = {Pr_ct_01 + Pr_ct_11, 1e-10};
-      Pr_ct_0 = max(Pr_ct_0_vec);
-      Pr_ct_1 = max(Pr_ct_1_vec);
+      Pr_ct_0_raw = Pr_ct_00 + Pr_ct_10;
+      Pr_ct_1_raw = Pr_ct_01 + Pr_ct_11;
+      Pr_ct_0 = fmax(Pr_ct_0_raw, 1e-10);
+      Pr_ct_1 = fmax(Pr_ct_1_raw, 1e-10);
 
       //------------------------//
-      // Approximation part //////
+      // Approximation part     //
       //------------------------//
 
       // Approximate updated values to break exponential growth of required values
@@ -274,12 +285,12 @@ List FilterRecursions_fctn(vec data, double Ini, List systemList, List paramList
       //---------------------//
 
       if (outLogLik == false)
-         {
+      {
          // Store prediction errors and variances
          v_t = {v_t_00, v_t_10, v_t_01, v_t_11};
-         v_ct_mat.row(i) = v_t.t();
+         v_ct_mat.row(i) = v_t;
          F_t = {F_t_00, F_t_10, F_t_01, F_t_11};
-         F_ct_mat.row(i) = F_t.t();
+         F_ct_mat.row(i) = F_t;
          // Pr of S_t = j conditional on t = t-1 is given by summarizing over all regimes at t = t-1
          // (t|t-1)
          Pr_clt_0 = Pr_clt_00 + Pr_clt_10;
@@ -287,11 +298,11 @@ List FilterRecursions_fctn(vec data, double Ini, List systemList, List paramList
          // Records predicted probabilities
          // (t|t-1)
          Pr_clt = {Pr_clt_0, Pr_clt_1};
-         Prob_t_clt.row(i) = Pr_clt.t();
+         Prob_t_clt.row(i) = Pr_clt;
          // Records updated probability
          // (t|t)
          Pr_ct = {Pr_ct_0, Pr_ct_1};
-         Prob_t_ct.row(i) = Pr_ct.t();
+         Prob_t_ct.row(i) = Pr_ct;
          // Store predicted values
          // (t|t-1)
          a_t_clt = join_rows(a_t_clt_00, a_t_clt_10, a_t_clt_01, a_t_clt_11);
@@ -304,8 +315,8 @@ List FilterRecursions_fctn(vec data, double Ini, List systemList, List paramList
          a_ct_array.slice(i) = a_t_ct;
          P_t_ct = join_rows(P_t_ct_0, P_t_ct_1);
          P_ct_array.slice(i) = P_t_ct;
-      } 
-      else 
+      }
+      else
       {
          // Store approximate likelihood
          logLik_t = -log(y_dens_clt);
@@ -328,7 +339,8 @@ List FilterRecursions_fctn(vec data, double Ini, List systemList, List paramList
       P_t_clt_11 = Tt * P_t_ct_1 * transTt + expandQ_1;
    }
 
-   if (outLogLik == false) {
+   if (outLogLik == false)
+   {
       List filterOutput = List::create(
           Named("a_clt") = a_clt_array, // predicted state vector
           _["P_clt"] = P_clt_array,     // predicted state vector var
@@ -340,12 +352,17 @@ List FilterRecursions_fctn(vec data, double Ini, List systemList, List paramList
           _["Pred_err_Var"] = F_ct_mat  // Var of pred error
       );
       return filterOutput;
-   } else {
+   }
+   else
+   {
       // Impose constraint that p,q > 0.9
-      if (p <= 0.9) {
-         logLik_T = 10000 * (1 - p) + logLik_T;
-      } else if (q <= 0.9) {
-         logLik_T = 10000 * (1 - q) + logLik_T;
+      if (p <= 0.9)
+      {
+         logLik_T = 1e4 * (1 - p) + logLik_T;
+      }
+      else if (q <= 0.9)
+      {
+         logLik_T = 1e4 * (1 - q) + logLik_T;
       }
       List logLikList = List::create(logLik_T);
       return logLikList;

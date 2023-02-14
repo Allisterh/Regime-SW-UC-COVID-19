@@ -1796,6 +1796,11 @@ modelSpec = &quot;UCModel&quot;
 #modelSpec = &quot;MACycle&quot;
 Init_fctn(modelSpec, startDate, endDate, country)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyBwYWNrYWdlcyBcbkNvbXBpbGluZyBmdW5jdGlvbnMgXG5QdWxsaW5nIGRhdGEgXG4ifQ== -->
+<pre><code>Loading packages 
+Compiling functions 
+Pulling data </code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1809,21 +1814,33 @@ results are stored in the folder /“Model_Spec”_Output/GridSearch within
 the working directory.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuR3JpZFNlYXJjaF9mY3RuKG1vZGVsID0gbW9kZWxTcGVjLCBkYXRhID0gZGF0YVZlYywgdHJlbmRJbmkgPSB0cmVuZEluaSwgblJhbmRvbSA9IDNlMDQsIHN0ZXBzR3JpZCA9IDYpXG5gYGAifQ== -->
-<pre class="r"><code>GridSearch_fctn(model = modelSpec, data = dataVec, trendIni = trendIni, nRandom = 3e04, stepsGrid = 6)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="apply-the-model" class="section level4">
-<h4>4. Apply the model</h4>
-<p>The following step employs the grid search results to run the Kim
-filter and smoother recursions. All relevant output is collected in the
-modelOutputList.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWxPdXRwdXRMaXN0IDwtIE1vZGVsQXBwbGljYXRpb25fZmN0bihtb2RlbCA9IG1vZGVsU3BlYywgZGF0YSA9IGRhdGFWZWMsIHRyZW5kSW5pID0gdHJlbmRJbmksIGRhdGFUaWIgPSBkYXRhVGliKVxuYGBgIn0= -->
-<pre class="r"><code>modelOutputList &lt;- ModelApplication_fctn(model = modelSpec, data = dataVec, trendIni = trendIni, dataTib = dataTib)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuR3JpZFNlYXJjaF9mY3RuKG1vZGVsID0gbW9kZWxTcGVjLCBkYXRhID0gZGF0YVZlYywgdHJlbmRJbmkgPSB0cmVuZEluaSwgblJhbmRvbSA9IDNlMDQsIHN0ZXBzR3JpZCA9IDYpXG5gYGBcbmBgYCJ9 -->
+<pre class="r"><code>```r
+GridSearch_fctn(model = modelSpec, data = dataVec, trendIni = trendIni, nRandom = 3e04, stepsGrid = 6)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+#### 4. Apply the model
+
+The following step employs the grid search results to run the Kim filter and smoother recursions. All relevant output is collected in the modelOutputList.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWxPdXRwdXRMaXN0IDwtIE1vZGVsQXBwbGljYXRpb25fZmN0bihtb2RlbCA9IG1vZGVsU3BlYywgZGF0YSA9IGRhdGFWZWMsIHRyZW5kSW5pID0gdHJlbmRJbmksIGRhdGFUaWIgPSBkYXRhVGliKVxuYGBgIn0= --&gt;
+
+```r
+modelOutputList &lt;- ModelApplication_fctn(model = modelSpec, data = dataVec, trendIni = trendIni, dataTib = dataTib)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1837,55 +1854,90 @@ the one-step-ahead predictions of the Kim filter. The output is stored
 int he folder /“Model_Spec”_Output/Nowcasting.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTm93Y2FzdGluZ19mY3RuKG1vZGVsID0gbW9kZWxTcGVjLCBkYXRhID0gZGF0YVZlYywgdHJlbmRJbmkgPSB0cmVuZEluaSwgZGF0YVRpYiA9IGRhdGFUaWIsIGluaVBlcmlvZCA9IDE1MCwgZXN0aW1JbnRlcnZhbCA9IDMsIGdyaWRTZWFyY2hJbnRlcnZhbCA9IDE1MClcbmBgYCJ9 -->
-<pre class="r"><code>Nowcasting_fctn(model = modelSpec, data = dataVec, trendIni = trendIni, dataTib = dataTib, iniPeriod = 150, estimInterval = 3, gridSearchInterval = 150)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="visualize-the-findings" class="section level4">
-<h4>6. Visualize the findings</h4>
-<p>This code chunk uses the model output to reproduce the figures in the
-paper. The figures are stored in the folder
-/“Model_Spec”_Output/Figures.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuRmlndXJlc19mY3RuKG1vZGVsID0gbW9kZWxTcGVjLCBtb2RlbE91dHB1dCA9IG1vZGVsT3V0cHV0TGlzdCwgZGF0YVRpYiA9IGRhdGFUaWIsIGRhdGFFeHRlbiA9IGRhdGFUaWJFeHRlbilcbmBgYCJ9 -->
-<pre class="r"><code>Figures_fctn(model = modelSpec, modelOutput = modelOutputList, dataTib = dataTib, dataExten = dataTibExten)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="report-the-estimates" class="section level4">
-<h4>7. Report the estimates</h4>
-<p>Tables 1 and 2 may be recreated by running the following block. An
-.xlsx book with the all entries of the tables as well as the various
-regime indicators as reported below table 1 will be created in the
-folder /“Model_Spec”_Output/Tables.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuVGFibGVzX2ZjdG4obW9kZWwgPSBtb2RlbFNwZWMsIG1vZGVsT3V0cHV0ID0gbW9kZWxPdXRwdXRMaXN0KVxuYGBgIn0= -->
-<pre class="r"><code>Tables_fctn(model = modelSpec, modelOutput = modelOutputList)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="run-further-diagnostics" class="section level4">
-<h4>8. Run further diagnostics</h4>
-<p>This code chunk produces diagnostic plots of the one-step-ahead
-prediction errors, their AC-function, the difference between smoothed
-trend and log infections over time as well as the seasonal component.
-All figures are stored in the folder (/“Model_Spec”_Output/Diagnostics)
-within the working directory.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuRGlhZ25vc3RpY3NfZmN0bihtb2RlbCA9IG1vZGVsU3BlYywgZGF0YVRpYiA9IGRhdGFUaWIsIG1vZGVsT3V0cHV0ID0gbW9kZWxPdXRwdXRMaXN0KVxuYGBgIn0= -->
-<pre class="r"><code>Diagnostics_fctn(model = modelSpec, dataTib = dataTib, modelOutput = modelOutputList)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuTm93Y2FzdGluZ19mY3RuKG1vZGVsID0gbW9kZWxTcGVjLCBkYXRhID0gZGF0YVZlYywgdHJlbmRJbmkgPSB0cmVuZEluaSwgZGF0YVRpYiA9IGRhdGFUaWIsIGluaVBlcmlvZCA9IDE1MCwgZXN0aW1JbnRlcnZhbCA9IDMsIGdyaWRTZWFyY2hJbnRlcnZhbCA9IDE1MClcbmBgYFxuYGBgIn0= -->
+<pre class="r"><code>```r
+Nowcasting_fctn(model = modelSpec, data = dataVec, trendIni = trendIni, dataTib = dataTib, iniPeriod = 150, estimInterval = 3, gridSearchInterval = 150)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+#### 6. Visualize the findings
+
+This code chunk uses the model output to reproduce the figures in the paper. The figures are stored in the folder /&quot;Model_Spec&quot;\_Output/Figures.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuRmlndXJlc19mY3RuKG1vZGVsID0gbW9kZWxTcGVjLCBtb2RlbE91dHB1dCA9IG1vZGVsT3V0cHV0TGlzdCwgZGF0YVRpYiA9IGRhdGFUaWIsIGRhdGFFeHRlbiA9IGRhdGFUaWJFeHRlbilcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+Figures_fctn(model = modelSpec, modelOutput = modelOutputList, dataTib = dataTib, dataExten = dataTibExten)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+#### 7. Report the estimates
+
+Tables 1 and 2 may be recreated by running the following block. An .xlsx book with the all entries of the tables as well as the various regime indicators as reported below table 1 will be created in the folder /&quot;Model_Spec&quot;\_Output/Tables.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuVGFibGVzX2ZjdG4obW9kZWwgPSBtb2RlbFNwZWMsIG1vZGVsT3V0cHV0ID0gbW9kZWxPdXRwdXRMaXN0KVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+Tables_fctn(model = modelSpec, modelOutput = modelOutputList)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+#### 8. Run further diagnostics
+
+This code chunk produces diagnostic plots of the one-step-ahead prediction errors, their AC-function, the difference between smoothed trend and log infections over time as well as the seasonal component. All figures are stored in the folder (/&quot;Model_Spec&quot;\_Output/Diagnostics) within the working directory.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuRGlhZ25vc3RpY3NfZmN0bihtb2RlbCA9IG1vZGVsU3BlYywgZGF0YVRpYiA9IGRhdGFUaWIsIG1vZGVsT3V0cHV0ID0gbW9kZWxPdXRwdXRMaXN0KVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+Diagnostics_fctn(model = modelSpec, dataTib = dataTib, modelOutput = modelOutputList)</code></pre>
+<p>```</p>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIk1vZGVsaW5nIHRoZSBDT1ZJRC0xOSBJbmZlY3Rpb24gUmF0ZXMgYnkgUmVnaW1lIFN3aXRjaGluZyBVbm9ic2VydmVkIENvbXBvbmVudHMgTW9kZWxzIg0Kb3V0cHV0OiBodG1sX25vdGVib29rDQpudW1iZXJfc2VjdGlvbnM6IFRSVUUNCi0tLQ0KDQpUaGlzIG5vdGVib29rIGlzIHRvIHJlcGxpY2F0ZSB0aGUgcmVzdWx0cyBvZiB0aGUgcGFwZXIgKioiTW9kZWxpbmcgdGhlIENPVklELTE5IEluZmVjdGlvbiBSYXRlcyBieSBSZWdpbWUgU3dpdGNoaW5nIFVub2JzZXJ2ZWQgQ29tcG9uZW50cyBNb2RlbHMiKiogYnkgUGF1bCBIYWltZXJsIGFuZCBUb2JpYXMgSGFydGwuDQoNCklmIHlvdSB1c2UgYW55IG9mIHRoaXMgY29kZSwgcGxlYXNlIGNpdGUgdGhpcyBwYXBlci4NCg0KSW4gY2FzZSBvZiBxdWVzdGlvbnMgb3IgaWYgeW91IGVuY291bnRlciBhIGJ1ZywgcGxlYXNlIGZlZWwgZnJlZSB0byByZWFjaCBvdXQgb3IgcmFpc2UgYW4gaXNzdWUgaW4gR2l0aHViLg0KDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCg0KIyMjIyAxLiBTZXQgdXAgdGhlIHdvcmtpbmcgZGlyZWN0b3J5DQoNCk5vdGUgdGhhdCB0aGUgZm9sZGVyICJTY3JpcHRzIiBhcyB3ZWxsIGFzIHRoZSBmb2xkZXIgaG9sZGluZyB0aGUgZ3JpZCBzZWFyY2ggcmVzdWx0cyBoYXZlIHRvIGJlIHN0b3JlZCBpbiB0aGUgd29ya2luZyBkaXJlY3RvcnkuDQoNCmBgYHtyfQ0Kcm0obGlzdD1scygpKQ0KI3NldHdkKCkNCmBgYA0KDQojIyMjIDIuIEluaXRpYWxpemUgdGhlIGVudmlyb25tZW50DQoNCkxvYWQgcGFja2FnZXMgYXMgd2VsbCBhcyB0aGUgZGF0YSBvbiBDT1ZJRC0xOSBpbmZlY3Rpb25zIGJ5IGV4ZWN1dGluZyB0aGUgaW5pdGlhbGl6YXRpb24gZnVuY3Rpb24uIFRoZSBzdHJpbmcgIk1vZGVsX1NwZWMiIGluZGljYXRlcyB3aGljaCBVQy1tb2RlbCB0byBydW4gYW5kIGhhcyB0byBlcXVhbCB0aGUgZmlsZSBuYW1lIG9mIHRoZSBzY3JpcHQgc3RvcmluZyB0aGUgS2ltIGZpbHRlciBmdW5jdGlvbnMgaW4gdGhlICJSIiBmb2xkZXIuDQoNCmBgYHtyIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9VFJVRX0NCnNvdXJjZSgiUi8wX0luaXQuUiIpDQpzdGFydERhdGUgPSAiMjAyMC0wNC0xIg0KZW5kRGF0ZSA9ICIyMDIyLTEyLTMxIg0KY291bnRyeSA9ICJVUyINCm1vZGVsU3BlYyA9ICJVQ01vZGVsIg0KI21vZGVsU3BlYyA9ICJEZXRlcm1TZWFzIg0KI21vZGVsU3BlYyA9ICJUaHJlZVN0YXRlIg0KI21vZGVsU3BlYyA9ICJUcmVuZFZhciINCiNtb2RlbFNwZWMgPSAiRW5kb2dlbiINCiNtb2RlbFNwZWMgPSAiQVJDeWNsZVZhciINCiNtb2RlbFNwZWMgPSAiTUFDeWNsZSINCkluaXRfZmN0bihtb2RlbFNwZWMsIHN0YXJ0RGF0ZSwgZW5kRGF0ZSwgY291bnRyeSkNCmBgYA0KDQojIyMjIDMuIFNlYXJjaCBmb3IgdGhlIHBlcmZlY3QgcGFyYW1ldGVycw0KDQpUaGlzIGZ1bmN0aW9uIGV4ZWN1dGVzIHRoZSAzLXN0ZXAgZ3JpZCBzZWFyY2ggcm91dGluZS4gTm90ZSB0aGF0IHRoZSBncmlkIHNlYXJjaCByZXN1bHRzIGFzIHVzZWQgaW4gaW4gdGhlIHBhcGVyIGFyZSBhbHJlYWR5IHByb3ZpZGVkIGluIHRoZSByZXBvc2l0b3J5LiBSdW5uaW5nIHRoZSBncmlkIHNlYXJjaCBpcyBjb21wdXRhdGlvbmFsbHkgaW50ZW5zaXZlIGFuZCBtYXkgcmVxdWlyZSB1cCB0byAxNCBob3VycyB0byBjb21wbGV0ZS4gSWYgeW91IHJ1biB0aGUgZ3JpZCBzZWFyY2gsIHRoZSByZXN1bHRzIGFyZSBzdG9yZWQgaW4gdGhlIGZvbGRlciAvIk1vZGVsX1NwZWMiXF9PdXRwdXQvR3JpZFNlYXJjaCB3aXRoaW4gdGhlIHdvcmtpbmcgZGlyZWN0b3J5Lg0KDQpgYGB7cn0NCkdyaWRTZWFyY2hfZmN0bihtb2RlbCA9IG1vZGVsU3BlYywgZGF0YSA9IGRhdGFWZWMsIHRyZW5kSW5pID0gdHJlbmRJbmksIG5SYW5kb20gPSAzZTA0LCBzdGVwc0dyaWQgPSA2KQ0KYGBgDQoNCiMjIyMgNC4gQXBwbHkgdGhlIG1vZGVsDQoNClRoZSBmb2xsb3dpbmcgc3RlcCBlbXBsb3lzIHRoZSBncmlkIHNlYXJjaCByZXN1bHRzIHRvIHJ1biB0aGUgS2ltIGZpbHRlciBhbmQgc21vb3RoZXIgcmVjdXJzaW9ucy4gQWxsIHJlbGV2YW50IG91dHB1dCBpcyBjb2xsZWN0ZWQgaW4gdGhlIG1vZGVsT3V0cHV0TGlzdC4NCg0KYGBge3J9DQptb2RlbE91dHB1dExpc3QgPC0gTW9kZWxBcHBsaWNhdGlvbl9mY3RuKG1vZGVsID0gbW9kZWxTcGVjLCBkYXRhID0gZGF0YVZlYywgdHJlbmRJbmkgPSB0cmVuZEluaSwgZGF0YVRpYiA9IGRhdGFUaWIpDQpgYGANCg0KIyMjIyA1LiBSdW4gdGhlIG5vd2Nhc3Rpbmcgc2ltdWxhdGlvbg0KDQpOZXh0LCB3ZSBzaW11bGF0ZSB0aGUgcGVyZm9ybWFuY2Ugb2Ygb3VyIG1vZGVsIGluIGEgc2ltdWxhdGVkIG5vd2Nhc3RpbmcgZXhlcmNpc2UuIFRoZSBwYXJhbWV0ZXIgZXN0aW1hdGVzIGFyZSBiYXNlZCBvbiBpbmNyZWFzaW5nIHN1YnNldHMgb2YgdGhlIHRvdGFsIG9ic2VydmF0aW9uYWwgaG9yaXpvbi4gVGhlIG5vd2Nhc3RlZCB2YWx1ZXMgcmVmbGVjdCB0aGUgb25lLXN0ZXAtYWhlYWQgcHJlZGljdGlvbnMgb2YgdGhlIEtpbSBmaWx0ZXIuIFRoZSBvdXRwdXQgaXMgc3RvcmVkIGludCBoZSBmb2xkZXIgLyJNb2RlbF9TcGVjIlxfT3V0cHV0L05vd2Nhc3RpbmcuDQoNCmBgYHtyfQ0KTm93Y2FzdGluZ19mY3RuKG1vZGVsID0gbW9kZWxTcGVjLCBkYXRhID0gZGF0YVZlYywgdHJlbmRJbmkgPSB0cmVuZEluaSwgZGF0YVRpYiA9IGRhdGFUaWIsIGluaVBlcmlvZCA9IDE1MCwgZXN0aW1JbnRlcnZhbCA9IDMsIGdyaWRTZWFyY2hJbnRlcnZhbCA9IDE1MCkNCmBgYA0KDQojIyMjIDYuIFZpc3VhbGl6ZSB0aGUgZmluZGluZ3MNCg0KVGhpcyBjb2RlIGNodW5rIHVzZXMgdGhlIG1vZGVsIG91dHB1dCB0byByZXByb2R1Y2UgdGhlIGZpZ3VyZXMgaW4gdGhlIHBhcGVyLiBUaGUgZmlndXJlcyBhcmUgc3RvcmVkIGluIHRoZSBmb2xkZXIgLyJNb2RlbF9TcGVjIlxfT3V0cHV0L0ZpZ3VyZXMuDQoNCmBgYHtyfQ0KRmlndXJlc19mY3RuKG1vZGVsID0gbW9kZWxTcGVjLCBtb2RlbE91dHB1dCA9IG1vZGVsT3V0cHV0TGlzdCwgZGF0YVRpYiA9IGRhdGFUaWIsIGRhdGFFeHRlbiA9IGRhdGFUaWJFeHRlbikNCmBgYA0KDQojIyMjIDcuIFJlcG9ydCB0aGUgZXN0aW1hdGVzDQoNClRhYmxlcyAxIGFuZCAyIG1heSBiZSByZWNyZWF0ZWQgYnkgcnVubmluZyB0aGUgZm9sbG93aW5nIGJsb2NrLiBBbiAueGxzeCBib29rIHdpdGggdGhlIGFsbCBlbnRyaWVzIG9mIHRoZSB0YWJsZXMgYXMgd2VsbCBhcyB0aGUgdmFyaW91cyByZWdpbWUgaW5kaWNhdG9ycyBhcyByZXBvcnRlZCBiZWxvdyB0YWJsZSAxIHdpbGwgYmUgY3JlYXRlZCBpbiB0aGUgZm9sZGVyIC8iTW9kZWxfU3BlYyJcX091dHB1dC9UYWJsZXMuDQoNCmBgYHtyfQ0KVGFibGVzX2ZjdG4obW9kZWwgPSBtb2RlbFNwZWMsIG1vZGVsT3V0cHV0ID0gbW9kZWxPdXRwdXRMaXN0KQ0KYGBgDQoNCiMjIyMgOC4gUnVuIGZ1cnRoZXIgZGlhZ25vc3RpY3MNCg0KVGhpcyBjb2RlIGNodW5rIHByb2R1Y2VzIGRpYWdub3N0aWMgcGxvdHMgb2YgdGhlIG9uZS1zdGVwLWFoZWFkIHByZWRpY3Rpb24gZXJyb3JzLCB0aGVpciBBQy1mdW5jdGlvbiwgdGhlIGRpZmZlcmVuY2UgYmV0d2VlbiBzbW9vdGhlZCB0cmVuZCBhbmQgbG9nIGluZmVjdGlvbnMgb3ZlciB0aW1lIGFzIHdlbGwgYXMgdGhlIHNlYXNvbmFsIGNvbXBvbmVudC4gQWxsIGZpZ3VyZXMgYXJlIHN0b3JlZCBpbiB0aGUgZm9sZGVyICgvIk1vZGVsX1NwZWMiXF9PdXRwdXQvRGlhZ25vc3RpY3MpIHdpdGhpbiB0aGUgd29ya2luZyBkaXJlY3RvcnkuDQoNCmBgYHtyfQ0KRGlhZ25vc3RpY3NfZmN0bihtb2RlbCA9IG1vZGVsU3BlYywgZGF0YVRpYiA9IGRhdGFUaWIsIG1vZGVsT3V0cHV0ID0gbW9kZWxPdXRwdXRMaXN0KQ0KYGBgDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIk1vZGVsaW5nIHRoZSBDT1ZJRC0xOSBJbmZlY3Rpb24gUmF0ZXMgYnkgUmVnaW1lIFN3aXRjaGluZyBVbm9ic2VydmVkIENvbXBvbmVudHMgTW9kZWxzIg0Kb3V0cHV0OiBodG1sX25vdGVib29rDQpudW1iZXJfc2VjdGlvbnM6IFRSVUUNCi0tLQ0KDQpUaGlzIG5vdGVib29rIGlzIHRvIHJlcGxpY2F0ZSB0aGUgcmVzdWx0cyBvZiB0aGUgcGFwZXIgKioiTW9kZWxpbmcgdGhlIENPVklELTE5IEluZmVjdGlvbiBSYXRlcyBieSBSZWdpbWUgU3dpdGNoaW5nIFVub2JzZXJ2ZWQgQ29tcG9uZW50cyBNb2RlbHMiKiogYnkgUGF1bCBIYWltZXJsIGFuZCBUb2JpYXMgSGFydGwuDQoNCklmIHlvdSB1c2UgYW55IG9mIHRoaXMgY29kZSwgcGxlYXNlIGNpdGUgdGhpcyBwYXBlci4NCg0KSW4gY2FzZSBvZiBxdWVzdGlvbnMgb3IgaWYgeW91IGVuY291bnRlciBhIGJ1ZywgcGxlYXNlIGZlZWwgZnJlZSB0byByZWFjaCBvdXQgb3IgcmFpc2UgYW4gaXNzdWUgaW4gR2l0aHViLg0KDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCg0KIyMjIyAxLiBTZXQgdXAgdGhlIHdvcmtpbmcgZGlyZWN0b3J5DQoNCk5vdGUgdGhhdCB0aGUgZm9sZGVyICJTY3JpcHRzIiBhcyB3ZWxsIGFzIHRoZSBmb2xkZXIgaG9sZGluZyB0aGUgZ3JpZCBzZWFyY2ggcmVzdWx0cyBoYXZlIHRvIGJlIHN0b3JlZCBpbiB0aGUgd29ya2luZyBkaXJlY3RvcnkuDQoNCmBgYHtyfQ0Kcm0obGlzdD1scygpKQ0KI3NldHdkKCkNCmBgYA0KDQojIyMjIDIuIEluaXRpYWxpemUgdGhlIGVudmlyb25tZW50DQoNCkxvYWQgcGFja2FnZXMgYXMgd2VsbCBhcyB0aGUgZGF0YSBvbiBDT1ZJRC0xOSBpbmZlY3Rpb25zIGJ5IGV4ZWN1dGluZyB0aGUgaW5pdGlhbGl6YXRpb24gZnVuY3Rpb24uIFRoZSBzdHJpbmcgIk1vZGVsX1NwZWMiIGluZGljYXRlcyB3aGljaCBVQy1tb2RlbCB0byBydW4gYW5kIGhhcyB0byBlcXVhbCB0aGUgZmlsZSBuYW1lIG9mIHRoZSBzY3JpcHQgc3RvcmluZyB0aGUgS2ltIGZpbHRlciBmdW5jdGlvbnMgaW4gdGhlICJSIiBmb2xkZXIuDQoNCmBgYHtyIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9VFJVRX0NCnNvdXJjZSgiUi8wX0luaXQuUiIpDQpzdGFydERhdGUgPSAiMjAyMC0wNC0xIg0KZW5kRGF0ZSA9ICIyMDIyLTEyLTMxIg0KY291bnRyeSA9ICJVUyINCiNtb2RlbFNwZWMgPSAiVUNNb2RlbCINCiNtb2RlbFNwZWMgPSAiRGV0ZXJtU2VhcyINCiNtb2RlbFNwZWMgPSAiVGhyZWVTdGF0ZSINCiNtb2RlbFNwZWMgPSAiVHJlbmRWYXIiDQojbW9kZWxTcGVjID0gIkVuZG9nZW4iDQojbW9kZWxTcGVjID0gIkFSQ3ljbGVWYXIiDQojbW9kZWxTcGVjID0gIk1BQ3ljbGUiDQptb2RlbFNwZWMgPSAiVHdvUmVnaW1lIg0KSW5pdF9mY3RuKG1vZGVsU3BlYywgc3RhcnREYXRlLCBlbmREYXRlLCBjb3VudHJ5KQ0KYGBgDQoNCiMjIyMgMy4gU2VhcmNoIGZvciB0aGUgcGVyZmVjdCBwYXJhbWV0ZXJzDQoNClRoaXMgZnVuY3Rpb24gZXhlY3V0ZXMgdGhlIDMtc3RlcCBncmlkIHNlYXJjaCByb3V0aW5lLiBOb3RlIHRoYXQgdGhlIGdyaWQgc2VhcmNoIHJlc3VsdHMgYXMgdXNlZCBpbiBpbiB0aGUgcGFwZXIgYXJlIGFscmVhZHkgcHJvdmlkZWQgaW4gdGhlIHJlcG9zaXRvcnkuIFJ1bm5pbmcgdGhlIGdyaWQgc2VhcmNoIGlzIGNvbXB1dGF0aW9uYWxseSBpbnRlbnNpdmUgYW5kIG1heSByZXF1aXJlIHVwIHRvIDE0IGhvdXJzIHRvIGNvbXBsZXRlLiBJZiB5b3UgcnVuIHRoZSBncmlkIHNlYXJjaCwgdGhlIHJlc3VsdHMgYXJlIHN0b3JlZCBpbiB0aGUgZm9sZGVyIC8iTW9kZWxfU3BlYyJcX091dHB1dC9HcmlkU2VhcmNoIHdpdGhpbiB0aGUgd29ya2luZyBkaXJlY3RvcnkuDQoNCmBgYHtyfQ0KR3JpZFNlYXJjaF9mY3RuKG1vZGVsID0gbW9kZWxTcGVjLCBkYXRhID0gZGF0YVZlYywgdHJlbmRJbmkgPSB0cmVuZEluaSwgblJhbmRvbSA9IDNlMDQsIHN0ZXBzR3JpZCA9IDYpDQpgYGANCg0KIyMjIyA0LiBBcHBseSB0aGUgbW9kZWwNCg0KVGhlIGZvbGxvd2luZyBzdGVwIGVtcGxveXMgdGhlIGdyaWQgc2VhcmNoIHJlc3VsdHMgdG8gcnVuIHRoZSBLaW0gZmlsdGVyIGFuZCBzbW9vdGhlciByZWN1cnNpb25zLiBBbGwgcmVsZXZhbnQgb3V0cHV0IGlzIGNvbGxlY3RlZCBpbiB0aGUgbW9kZWxPdXRwdXRMaXN0Lg0KDQpgYGB7cn0NCm1vZGVsT3V0cHV0TGlzdCA8LSBNb2RlbEFwcGxpY2F0aW9uX2ZjdG4obW9kZWwgPSBtb2RlbFNwZWMsIGRhdGEgPSBkYXRhVmVjLCB0cmVuZEluaSA9IHRyZW5kSW5pLCBkYXRhVGliID0gZGF0YVRpYikNCmBgYA0KDQojIyMjIDUuIFJ1biB0aGUgbm93Y2FzdGluZyBzaW11bGF0aW9uDQoNCk5leHQsIHdlIHNpbXVsYXRlIHRoZSBwZXJmb3JtYW5jZSBvZiBvdXIgbW9kZWwgaW4gYSBzaW11bGF0ZWQgbm93Y2FzdGluZyBleGVyY2lzZS4gVGhlIHBhcmFtZXRlciBlc3RpbWF0ZXMgYXJlIGJhc2VkIG9uIGluY3JlYXNpbmcgc3Vic2V0cyBvZiB0aGUgdG90YWwgb2JzZXJ2YXRpb25hbCBob3Jpem9uLiBUaGUgbm93Y2FzdGVkIHZhbHVlcyByZWZsZWN0IHRoZSBvbmUtc3RlcC1haGVhZCBwcmVkaWN0aW9ucyBvZiB0aGUgS2ltIGZpbHRlci4gVGhlIG91dHB1dCBpcyBzdG9yZWQgaW50IGhlIGZvbGRlciAvIk1vZGVsX1NwZWMiXF9PdXRwdXQvTm93Y2FzdGluZy4NCg0KYGBge3J9DQpOb3djYXN0aW5nX2ZjdG4obW9kZWwgPSBtb2RlbFNwZWMsIGRhdGEgPSBkYXRhVmVjLCB0cmVuZEluaSA9IHRyZW5kSW5pLCBkYXRhVGliID0gZGF0YVRpYiwgaW5pUGVyaW9kID0gMTUwLCBlc3RpbUludGVydmFsID0gMywgZ3JpZFNlYXJjaEludGVydmFsID0gMTUwKQ0KYGBgDQoNCiMjIyMgNi4gVmlzdWFsaXplIHRoZSBmaW5kaW5ncw0KDQpUaGlzIGNvZGUgY2h1bmsgdXNlcyB0aGUgbW9kZWwgb3V0cHV0IHRvIHJlcHJvZHVjZSB0aGUgZmlndXJlcyBpbiB0aGUgcGFwZXIuIFRoZSBmaWd1cmVzIGFyZSBzdG9yZWQgaW4gdGhlIGZvbGRlciAvIk1vZGVsX1NwZWMiXF9PdXRwdXQvRmlndXJlcy4NCg0KYGBge3J9DQpGaWd1cmVzX2ZjdG4obW9kZWwgPSBtb2RlbFNwZWMsIG1vZGVsT3V0cHV0ID0gbW9kZWxPdXRwdXRMaXN0LCBkYXRhVGliID0gZGF0YVRpYiwgZGF0YUV4dGVuID0gZGF0YVRpYkV4dGVuKQ0KYGBgDQoNCiMjIyMgNy4gUmVwb3J0IHRoZSBlc3RpbWF0ZXMNCg0KVGFibGVzIDEgYW5kIDIgbWF5IGJlIHJlY3JlYXRlZCBieSBydW5uaW5nIHRoZSBmb2xsb3dpbmcgYmxvY2suIEFuIC54bHN4IGJvb2sgd2l0aCB0aGUgYWxsIGVudHJpZXMgb2YgdGhlIHRhYmxlcyBhcyB3ZWxsIGFzIHRoZSB2YXJpb3VzIHJlZ2ltZSBpbmRpY2F0b3JzIGFzIHJlcG9ydGVkIGJlbG93IHRhYmxlIDEgd2lsbCBiZSBjcmVhdGVkIGluIHRoZSBmb2xkZXIgLyJNb2RlbF9TcGVjIlxfT3V0cHV0L1RhYmxlcy4NCg0KYGBge3J9DQpUYWJsZXNfZmN0bihtb2RlbCA9IG1vZGVsU3BlYywgbW9kZWxPdXRwdXQgPSBtb2RlbE91dHB1dExpc3QpDQpgYGANCg0KIyMjIyA4LiBSdW4gZnVydGhlciBkaWFnbm9zdGljcw0KDQpUaGlzIGNvZGUgY2h1bmsgcHJvZHVjZXMgZGlhZ25vc3RpYyBwbG90cyBvZiB0aGUgb25lLXN0ZXAtYWhlYWQgcHJlZGljdGlvbiBlcnJvcnMsIHRoZWlyIEFDLWZ1bmN0aW9uLCB0aGUgZGlmZmVyZW5jZSBiZXR3ZWVuIHNtb290aGVkIHRyZW5kIGFuZCBsb2cgaW5mZWN0aW9ucyBvdmVyIHRpbWUgYXMgd2VsbCBhcyB0aGUgc2Vhc29uYWwgY29tcG9uZW50LiBBbGwgZmlndXJlcyBhcmUgc3RvcmVkIGluIHRoZSBmb2xkZXIgKC8iTW9kZWxfU3BlYyJcX091dHB1dC9EaWFnbm9zdGljcykgd2l0aGluIHRoZSB3b3JraW5nIGRpcmVjdG9yeS4NCg0KYGBge3J9DQpEaWFnbm9zdGljc19mY3RuKG1vZGVsID0gbW9kZWxTcGVjLCBkYXRhVGliID0gZGF0YVRpYiwgbW9kZWxPdXRwdXQgPSBtb2RlbE91dHB1dExpc3QpDQpgYGANCg==</div>
 
 
 

@@ -30,13 +30,14 @@ source("R/0_Init.R")
 startDate = "2020-04-1"
 endDate = "2022-12-31"
 country = "US"
-modelSpec = "UCModel"
+#modelSpec = "UCModel"
 #modelSpec = "DetermSeas"
 #modelSpec = "ThreeState"
 #modelSpec = "TrendVar"
 #modelSpec = "Endogen"
 #modelSpec = "ARCycleVar"
 #modelSpec = "MACycle"
+modelSpec = "TwoRegime"
 Init_fctn(modelSpec, startDate, endDate, country)
 ```
 

@@ -4,9 +4,9 @@
 #' @param trendIni inital value for the trend component
 #' @param nRandom number of parameter vectors to draw in the initial grid search
 #' @param stepsGrid number of grid points to search over in the second grid search
-#' @param storeOutput logical. If FALSE, no output is stored and only the best fitting parameter
+#' @param storeOutput boolean If FALSE, no output is stored and only the best fitting parameter
 #'        vector returned.
-#' @param messages logical. If FALSE, no messages are printed
+#' @param messages boolean If FALSE, no messages are printed
 #' @export if storeOutput == TRUE Plots and tables in the ´Model´_Output/GridSearch folder
 #' @return if storeOutput == FALSE, returns the best fitting parameter vector as well as the
 #' associated likelihood and information criteria
@@ -105,20 +105,19 @@ GridSearch_fctn <- function(model, data, trendIni, nRandom, stepsGrid, storeOutp
     ))
   }, data = dataVec, Ini = trendIni, endogen = probitIndicator) %>%
     t()
-  # Collect parameters from the list of optim results
-  resultsOptimUnfltrd <- matrix(NA, nrow = length(resultsOptim), ncol = NCOL(thetaRand) + 1)
-  for (i in (1:length(resultsOptim))) {
-    if (is.list(resultsOptim[[i]])) {
-      resultsOptimUnfltrd[i, 1] <- resultsOptim[[i]]$value
-      resultsOptimUnfltrd[i, 2:(NCOL(thetaRand) + 1)] <- resultsOptim[[i]]$par
+  # Collect the ML parameters from the list of optim results
+  resultsOptimUnfltrd <- sapply(resultsOptim, function(x, nparams){
+    if (is.list(x)) {
+      outputVec <- c(x$value, x$par)
     } else {
-      resultsOptimUnfltrd[i, ] <- NA
+      oututVec <- rep(NA, nparams)
     }
-  }
-  colnames(resultsOptimUnfltrd) <- c("ll", names(thetaRand))
+  }, nparams = NCOL(thetaRand) + 1) %>%
+    t()
+  colnames(resultsOptimUnfltrd)[1] <- "ll"
   resultsOptimUnfltrd <- resultsOptimUnfltrd[order(resultsOptimUnfltrd[, "ll"]), ]
   resultsOptimMat <- resultsOptimUnfltrd[!is.na(resultsOptimUnfltrd[, 1]), ]
-  # Select parameters
+  # Select the best parameter vector and save results
   thetaVec <- resultsOptimMat[1, -1]
   if (storeOutput == TRUE) {
     write_rds(resultsOptimMat, file = paste0(path, "resultsOptimMat.rds"))

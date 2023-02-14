@@ -71,15 +71,12 @@ SmootherRecursions_fctn <- function(filterOutput, systemList, paramList, ciInter
 
   P_t1_cT_0 <- P_cT_array[, 1:Dimens, periods] <- filterOutput[["P_ct"]][, 1:Dimens, periods]
   P_t1_cT_1 <- P_cT_array[, (Dimens + 1):(2 * Dimens), periods] <- filterOutput[["P_ct"]][, (Dimens + 1):(2 * Dimens), periods]
-  P_cT_array[, (2 * Dimens + 1):(3 * Dimens), periods] <- sum(
-    Pr_cT_0 * filterOutput[["P_ct"]][, 1:Dimens, periods],
-    Pr_cT_1 * filterOutput[["P_ct"]][, (Dimens + 1):(2 * Dimens), periods]
-  )
-
+  P_cT_array[, (2 * Dimens + 1):(3 * Dimens), periods] <- Pr_cT_0 * P_t1_cT_0 + Pr_cT_1 * P_t1_cT_1
+  
   #---------------------------------------------------------------------------------------#
   # Kim smoother (backwards) iteration
   #---------------------------------------------------------------------------------------#
-  seasLength <- 7
+
   for (i in (periods - 1):1) {
     # Load necessary filtered values for each iteration
     # Updated probabilities

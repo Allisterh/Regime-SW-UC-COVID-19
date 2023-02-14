@@ -28,7 +28,7 @@ Nowcasting_fctn <- function(model, data, trendIni, dataTib, iniPeriod, estimInte
   eventPeriods <- eventPeriods_temp[order(eventPeriods_temp)]
 
   if (!("nowcastingOutput.rds" %in% list.files(path = path)) & newRun == FALSE) {
-    warning("No previous results stored. Starting a new nowcasting simulation run. \n")
+    cat("No previous results stored. Starting a new nowcasting simulation run. \n")
     newRun <- TRUE
   }
   if (newRun == FALSE) {
@@ -39,7 +39,7 @@ Nowcasting_fctn <- function(model, data, trendIni, dataTib, iniPeriod, estimInte
       as.matrix()
     prevI <- NROW(nowcastingOutput)
     eventPeriods <- eventPeriods[eventPeriods > prevI]
-    cat(paste("  ->", prevI, "periods already calculated. Proceeding with event period", eventPeriods[1]), "\n")
+    cat(paste(prevI, "periods already calculated. Proceeding with event period", eventPeriods[1]), "\n")
   } else {
     # Initialize the temporary output objects when starting a new run
     paramMat <- matrix(NA, nc = length(thetaVec) + 1, nr = iniPeriod)
@@ -85,7 +85,7 @@ Nowcasting_fctn <- function(model, data, trendIni, dataTib, iniPeriod, estimInte
       bind_cols(paramMat)
     # Store the output
     write_rds(nowcastingOutput, file = paste0(path, "nowcastingOutput.rds"))
-    cat(paste("Calculation of event period", i, "finished \n"))
+    cat(paste("\r Calculation of event period", i, "finished"))
   }
   write.xlsx(nowcastingOutput, file = paste0(path, "NowcastingOutput.xlsx"))
 }

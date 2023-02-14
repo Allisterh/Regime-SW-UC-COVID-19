@@ -15,7 +15,6 @@ Tables_fctn <- function(model, modelOutput) {
 
   # Load grid search results
   gridSearchResults <- read_rds(file = paste0("Output/Output_", model, "/gridSearch/resultsOptimCnstrndMat.rds"))
-  seList <- read_rds(file = paste0("Output/Output_", model, "/gridSearch/thetaSElist.rds"))
   # Build table 1
   mlEstimates <- gridSearchResults[1, -c(1, (NCOL(gridSearchResults) - 2):NCOL(gridSearchResults))] %>%
     enframe() %>%
@@ -27,7 +26,7 @@ Tables_fctn <- function(model, modelOutput) {
     mutate_if(is.numeric, round, 3) %>%
     slice(match(names(LabelMap_fctn()), Parameter))
   # Derive various regime indicators reported below table 1
-  if (q %in% names(gridSearchResults)) {
+  if ("q" %in% colnames(gridSearchResults)) {
     avgDuration_S_1 <- 1 / (1 - gridSearchResults[1, "p"])
     avgDuration_S_0 <- 1 / (1 - gridSearchResults[1, "q"])
   } else {
