@@ -10,7 +10,7 @@ Diagnostics_fctn <- function(model, dataTib, modelOutput) {
   filterOutput <- modelOutput[["filterOutput"]]
   smootherOutput <- modelOutput[["smootherOutput"]]
   # Set the storage folder
-  path <- paste0(getwd(), "/Output/Output_", model, "/Diagnostics")  
+  path <- paste0(getwd(), "/Output/Output_", model, "/Diagnostics/")  
   if (!dir.exists(path)) {
     dir.create(path)
   }
@@ -26,7 +26,7 @@ Diagnostics_fctn <- function(model, dataTib, modelOutput) {
     plot.title = element_text(size = textSize - 3),
     panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
     axis.ticks.length = unit(.25, "cm"),
-    axis.ticks = element_line(size = 1)
+    axis.ticks = element_line(linewidth = 1)
   )
   themeElement <- theme(
     legend.position = "none",
@@ -36,7 +36,7 @@ Diagnostics_fctn <- function(model, dataTib, modelOutput) {
     plot.title = element_text(size = textSize - 3),
     panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
     axis.ticks.length = unit(.25, "cm"),
-    axis.ticks = element_line(size = 1)
+    axis.ticks = element_line(linewidth = 1)
   )
 
   #---------------------------------------------------------------------------------------#
@@ -64,8 +64,8 @@ Diagnostics_fctn <- function(model, dataTib, modelOutput) {
   predErrPlot <- predErrTib %>%
     ggplot() +
     geom_point(aes(x = Date, y = Error), size = 0.9) +
-    geom_line(aes(x = Date, y = (Mean + 2 * Stddev)), linetype = "dashed", color = blue, size = 1) +
-    geom_line(aes(x = Date, y = (Mean - 2 * Stddev)), linetype = "dashed", color = blue, size = 1) +
+    geom_line(aes(x = Date, y = (Mean + 2 * Stddev)), linetype = "dashed", color = blue, linewidth = 1) +
+    geom_line(aes(x = Date, y = (Mean - 2 * Stddev)), linetype = "dashed", color = blue, linewidth = 1) +
     facet_wrap(~Switch,
       labeller = label_bquote(paste(
         S[t - 1], " = ", .(substr(Switch, 1, 1)), ", ",
@@ -94,8 +94,8 @@ Diagnostics_fctn <- function(model, dataTib, modelOutput) {
   acfPlot <- acfTib %>%
     ggplot() +
     geom_bar(aes(x = Lags, y = AC), stat = "identity", width = 0.5) +
-    geom_line(aes(x = Lags, y = CI), linetype = "dashed", color = "#1874CD", size = 1) +
-    geom_line(aes(x = Lags, y = -CI), linetype = "dashed", color = "#1874CD", size = 1) +
+    geom_line(aes(x = Lags, y = CI), linetype = "dashed", color = "#1874CD", linewidth = 1) +
+    geom_line(aes(x = Lags, y = -CI), linetype = "dashed", color = "#1874CD", linewidth = 1) +
     geom_hline(yintercept = 0) +
     facet_wrap(~Switch,
       labeller = label_bquote(paste(

@@ -1,6 +1,6 @@
 #' @description Function to run the nowcasting exercise
 #' @param model that underlies the grid search
-#' @param data vector for which the likelihood values are to be computed
+#' @param data vector with the noisy measurement
 #' @param trendIni inital value for the trend component
 #' @param dataTib tibble with the dates
 #' @param iniPeriod number of periods used to build an initial data history
@@ -20,7 +20,7 @@ Nowcasting_fctn <- function(model, data, trendIni, dataTib, iniPeriod, estimInte
   nPeriods <- length(data)
   # Load a parameter vector to get the number of estimated parameters
   thetaVec <- read_rds(file = paste0("Output/Output_", model, "/GridSearch/thetaVec.rds"))
-  nRegimes <- ifelse(length(thetaVec) == 10, 3, 2)
+  nRegimes <- 2
   # Define the time points for parameter estimation and further grid searches
   paramEstim <- seq(iniPeriod + 1 + estimInterval, nPeriods, estimInterval)
   gridSearches <- seq(iniPeriod + 1, nPeriods, gridSearchInterval)
@@ -28,7 +28,7 @@ Nowcasting_fctn <- function(model, data, trendIni, dataTib, iniPeriod, estimInte
   eventPeriods <- eventPeriods_temp[order(eventPeriods_temp)]
 
   if (!("nowcastingOutput.rds" %in% list.files(path = path)) & newRun == FALSE) {
-    cat("No previous results stored. Starting a new nowcasting simulation run. \n")
+    cat("No previous results stored. Starting a new nowcasting simulation run.\n")
     newRun <- TRUE
   }
   if (newRun == FALSE) {
@@ -53,7 +53,7 @@ Nowcasting_fctn <- function(model, data, trendIni, dataTib, iniPeriod, estimInte
     if (i %in% gridSearches) {
       cat(paste("Running a robustification grid search at event period", i, "\n"))
       gridSearchOutput <- GridSearch_fctn(
-        model = model, data = data[1:i], trendIni = trendIni, nRandom = 5e04, stepsGrid = 4, storeOutput = F,
+        model = model, data = data[1:i], trendIni = trendIni, nRandom = 3e04, stepsGrid = 5, storeOutput = F,
         messages = F
       )
       ParamVec <- gridSearchOutput
@@ -72,7 +72,7 @@ Nowcasting_fctn <- function(model, data, trendIni, dataTib, iniPeriod, estimInte
     mlParams <- ParConstrain_fctn(paramMat[NROW(paramMat), -1])
     # Run the filter recursions
     filterOutput <- KimFilter_fctn(par = mlParams, data = data[1:i], Ini = trendIni, outLogLik = FALSE, endogen = endogenInd)
-    nowcastingVals <- filterOutput$Prob_clt[(prevI + 1):i, 2]
+    nowcastingVals <- filterOutput$Prob_clt[(prevI + 1):i, 1]
     # Store the nowcasted infection numbers
     nowcastingVec <- c(nowcastingVec, nowcastingVals)
     prevI <- i

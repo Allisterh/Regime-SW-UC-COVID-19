@@ -50,9 +50,9 @@ List CondKalman_fctn(vec data, double Ini, List systemList, List paramList, vec 
    int dimens = Tt.n_cols;
    int nPeriods = data.n_elem;
 
-   // Residual variance in the measurement eq
+   // Residual variance in the measurement eq. 1e-6 assures a positive definite var-cov variance of the state vector
    double epsilon = paramList["epsilon"];
-   double epsilonSq = pow(epsilon, 2);
+   double epsilonSq = fmax(pow(epsilon, 2), 1e-6);
 
    // Vector holding additional Drift in Regime 1
    double nu_1 = paramList["nu_1"];
@@ -84,8 +84,8 @@ List CondKalman_fctn(vec data, double Ini, List systemList, List paramList, vec 
    {
       a_t_clt(0) = Ini + nu_1;
    }
-   // Initial variance matrix for state vector (Exact diffuse initialization)
-   vec P_t_vec(dimens, fill::value(1000));
+   // Initial variance matrix for state vector (diffuse initialization)
+   vec P_t_vec(dimens, fill::value(1e3));
    mat P_t_clt = diagmat(P_t_vec);
 
    // Initializes output objects
@@ -188,7 +188,7 @@ List CondTwoRegimeKalman_fctn(vec data, double Ini, List systemList, List paramL
    int nPeriods = data.n_elem;
 
    // Residual variance in the measurement eq
-   double epsilon = paramList["epsilon"];
+   double epsilon = fmax(paramList["epsilon"], 1e-3);
    double epsilonSq = pow(epsilon, 2);
 
    // Vector holding additional Drift in Regime 1
@@ -389,14 +389,16 @@ mat CondHamilton_fctn(mat stateVec, List paramList, bool endogen = false)
    double Pr_ct_1_floor;
    double y_dens_clt_floor;
 
+   // nu_0 = stateVec.row(1).col(nPeriods - 1)(0);
+
    for (int i = 1; i < nPeriods; i++)
    {
       // Computes Pr(S_t = j, S_t-1 = i) conditional on information at time t-1
       // (t|t-1)
-      Pr_clt_00 = q * Pr_ct_0;
-      Pr_clt_10 = (1 - p) * Pr_ct_1;
-      Pr_clt_01 = (1 - q) * Pr_ct_0;
-      Pr_clt_11 = p * Pr_ct_1;
+      Pr_clt_00 = q * Pr_ct_0_floor;
+      Pr_clt_10 = (1 - p) * Pr_ct_1_floor;
+      Pr_clt_01 = (1 - q) * Pr_ct_0_floor;
+      Pr_clt_11 = p * Pr_ct_1_floor;
 
       // Compute the error term of the RW trend for each regime
       mu_t = stateVec.row(0).col(i)(0);
@@ -413,7 +415,6 @@ mat CondHamilton_fctn(mat stateVec, List paramList, bool endogen = false)
 
       // Sum up joint densities of y_t and regimes to integrate out regime dependencies (receive density of y_t conditional on all information at
       // (t|t-1))
-
       y_dens_clt = Pr_clt_00 * y_dens_clt_0 + Pr_clt_10 * y_dens_clt_0 + Pr_clt_01 * y_dens_clt_1 + Pr_clt_11 * y_dens_clt_1;
       y_dens_clt_floor = fmax(y_dens_clt, 1e-10);
 
@@ -430,6 +431,8 @@ mat CondHamilton_fctn(mat stateVec, List paramList, bool endogen = false)
       Pr_ct_1 = Pr_ct_01 + Pr_ct_11;
       Pr_ct_0_floor = fmax(Pr_ct_0, 1e-10);
       Pr_ct_1_floor = fmax(Pr_ct_1, 1e-10);
+      // Pr_ct_0_floor = fmin(fmax(Pr_ct_0, .01), .99);
+      // Pr_ct_1_floor = fmin(fmax(Pr_ct_1, .01), .99);
 
       // Records updated probability
       // (t|t)

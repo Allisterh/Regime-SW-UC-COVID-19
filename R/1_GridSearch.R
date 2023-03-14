@@ -1,8 +1,8 @@
 #' @description Function to create distribution plots as part of the grid search output
 #' @param model that underlies the grid search
-#' @param data vector for which the likelihood values are to be computed
+#' @param data vector with the noisy measurement
 #' @param trendIni inital value for the trend component
-#' @param nRandom number of parameter vectors to draw in the initial grid search
+#' @param nRandomGrid number of parameter vectors to draw in the initial grid search
 #' @param stepsGrid number of grid points to search over in the second grid search
 #' @param storeOutput boolean If FALSE, no output is stored and only the best fitting parameter
 #'        vector returned.
@@ -11,20 +11,27 @@
 #' @return if storeOutput == FALSE, returns the best fitting parameter vector as well as the
 #' associated likelihood and information criteria
 
-GridSearch_fctn <- function(model, data, trendIni, nRandom, stepsGrid, storeOutput = TRUE, messages = TRUE) {
+GridSearch_fctn <- function(model, data, trendIni, nRandomGrid, stepsGrid, storeOutput = TRUE, messages = TRUE) {
   # Create an output folder
   path <- paste0(getwd(), "/Output/Output_", model, "/GridSearch/")
   if (!dir.exists(path) & storeOutput == TRUE) {
     dir.create(path)
   }
+  notImplementedModels <- c("D.Seas.3.St.", "UR.Seas.MAC", "UR.Seas.En")
+  if (modelSpec %in% notImplementedModels) {
+    stop(
+      "The Kim filter is not yet implemented for the model specification ",
+      modelSpec, "\n"
+    )
+  }
 
   #-------------------------------------------------------------------------------------#
   # Initial random grid search                                                       ####
   #-------------------------------------------------------------------------------------#
-
+browser()
   set.seed(2)
   # Build the random grid
-  thetaRand <- ThetaRand_fctn(nRandom = nRandom)
+  thetaRand <- ThetaRand_fctn(nRandomGrid = nRandomGrid)
   paramNames <- colnames(thetaRand)
   # Check if the model is using a Probit specification for the regime process
   probitIndicator <- ifelse(any(str_detect(paramNames, "beta")) == TRUE, TRUE, FALSE)
@@ -42,12 +49,12 @@ GridSearch_fctn <- function(model, data, trendIni, nRandom, stepsGrid, storeOutp
   # Collect results
   resultsRandUnfltrd <- resultsRandUnfltrd[order(resultsRandUnfltrd[, 1]), ]
   resultsRand <- resultsRandUnfltrd[!is.na(resultsRandUnfltrd[, 1]), ]
-  # Transform the Probit AR coefficients to probabilities if necessary
   if (storeOutput == TRUE) {
     write_rds(resultsRand, file = paste0(path, "resultsRand.rds"))
     # Analyse best thetas
     resultsRandCnstrnd <- t(apply(resultsRand[, -1], 1, ParConstrain_fctn))
     colnames(resultsRandCnstrnd) <- names(thetaRand)
+    # Transform the Probit AR coefficients to probabilities if necessary
     if (probitIndicator == TRUE) resultsRandCnstrnd <- ProbitProb_fctn(resultsRandCnstrnd)
     PlotParameterDist_fctn(resultsRandCnstrnd[1:50, ],
       title = "Step1_RandGrid", path = path,
@@ -106,7 +113,7 @@ GridSearch_fctn <- function(model, data, trendIni, nRandom, stepsGrid, storeOutp
   }, data = dataVec, Ini = trendIni, endogen = probitIndicator) %>%
     t()
   # Collect the ML parameters from the list of optim results
-  resultsOptimUnfltrd <- sapply(resultsOptim, function(x, nparams){
+  resultsOptimUnfltrd <- sapply(resultsOptim, function(x, nparams) {
     if (is.list(x)) {
       outputVec <- c(x$value, x$par)
     } else {
@@ -205,7 +212,7 @@ ThetaGrid_fctn <- function(resultsRand, stepsGrid) {
 #' @description Function to compute the AIC, HQ and BIC information criteria
 #' @param logLik log likelihood (times -1)
 #' @param nParams number of estimated parameters of the model
-#' @param nDiffus number of parameters that are initialized diffusely 
+#' @param nDiffus number of parameters that are initialized diffusely
 #' @param nPeriods number of time periods
 #' @return vector of information criteria
 

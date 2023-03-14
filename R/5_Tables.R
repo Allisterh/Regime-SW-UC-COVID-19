@@ -31,7 +31,7 @@ Tables_fctn <- function(model, modelOutput) {
     avgDuration_S_0 <- 1 / (1 - gridSearchResults[1, "q"])
   } else {
     avgDuration_S_1 <- 1 / (1 - gridSearchResults[1, "p_11"])
-    avgDuration_S_0 <- 1 / (1 - (1 - gridSearchResults[1, "p_01"] - gridSearchResults[1, "p_02"]))
+    avgDuration_S_0 <- 1 / (1 - gridSearchResults[1, "p_00"])
   }
   avgChange_S_1 <- (1 - exp(gridSearchResults[1, "nu_0"] + gridSearchResults[1, "nu_1"])) * 100
   avgChange_S_0 <- (exp(gridSearchResults[1, "nu_0"]) - 1) * 100
@@ -54,7 +54,7 @@ Tables_fctn <- function(model, modelOutput) {
   addWorksheet(mlBook, "Diagnostics")
   addWorksheet(mlBook, "regimeCharacteristics")
   writeData(mlBook, "mleEstimates", mlEstimates)
-  writeData(mlBook, "Diagnostics", round(gridSearchResults[1, c(1, 9:11)], 3))
+  writeData(mlBook, "Diagnostics", round(gridSearchResults[1, c(1, (NCOL(gridSearchResults) - 2):NCOL(gridSearchResults))], 3))
   writeData(mlBook, "regimeCharacteristics", Regime_Characteristics)
   saveWorkbook(mlBook, file = paste0(path, "/Tab_1_MLE_Parameters.xlsx"), overwrite = TRUE)
 

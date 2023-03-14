@@ -52,7 +52,7 @@ List FilterRecursions_fctn(vec data, double Ini, List systemList, List paramList
 
    // Residual variance in the measurement eq
    double epsilon = paramList["epsilon"];
-   double epsilonSq = pow(epsilon, 2);
+   double epsilonSq = fmax(pow(epsilon, 2), 1e-6);
 
    // Setting up the transition probabilities
    double p;
