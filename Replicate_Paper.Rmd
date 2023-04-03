@@ -40,7 +40,7 @@ Init_fctn(modelSpec, startDate, endDate, country)
 This function executes the 3-step grid search routine. Note that the grid search results as used in in the paper are already provided in the repository. Running the grid search is computationally intensive and may require up to 2 hours to complete. If you run the grid search, the results are stored in Output/"Model_Spec"\_Output/GridSearch.
 
 ```{r}
-GridSearch_fctn(model = modelSpec, data = dataVec, trendIni = trendIni, nRandomGrid = 3e04, stepsGrid = 6, storeOutput = F)
+GridSearch_fctn(model = modelSpec, data = dataVec, trendIni = trendIni, nRandomGrid = 3e04, stepsGrid = 6, storeOutput = TRUE)
 ```
 
 
@@ -71,8 +71,7 @@ This code chunk uses the previously collected output to reproduce the figures in
 
 ```{r}
 Figures_fctn(
-  model = modelSpec, modelOutput = modelOutputList, dataTib = dataTib,
-  dataExten = dataTibExten, latexOutput = T
+  model = modelSpec, modelOutput = modelOutputList, dataTib = dataTib, dataExten = dataTibExten
 )
 ```
 

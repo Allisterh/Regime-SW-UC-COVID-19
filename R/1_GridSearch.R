@@ -28,13 +28,14 @@ GridSearch_fctn <- function(model, data, trendIni, nRandomGrid, stepsGrid, store
   #-------------------------------------------------------------------------------------#
   # Initial random grid search                                                       ####
   #-------------------------------------------------------------------------------------#
-browser()
+
   set.seed(2)
   # Build the random grid
   thetaRand <- ThetaRand_fctn(nRandomGrid = nRandomGrid)
   paramNames <- colnames(thetaRand)
   # Check if the model is using a Probit specification for the regime process
   probitIndicator <- ifelse(any(str_detect(paramNames, "beta")) == TRUE, TRUE, FALSE)
+  # Search over parameter grid
   if (messages == TRUE) cat("Step 1/3: Begin initial random grid search \n")
   resultsRandUnfltrd <- pbapply(thetaRand, 1, function(theta, data, Ini, endogen) {
     return(c(

@@ -20,7 +20,7 @@ Package_fctn <- function(pckg) {
 #' all data and dates constrained to the observational period, initial value for the trend
 
 Init_fctn <- function(model, startDate, endDate, country, province = NULL, simData = FALSE) {
-  cat("Loading packages \n")
+  cat("Loading packages ")
   # Install and or load packages
   packages <- c(
     "Rcpp", "RcppArmadillo", "pbapply", "Matrix", "tfarima", "MCMCpack", "mvtnorm", "coda", "progress",
@@ -40,7 +40,7 @@ Init_fctn <- function(model, startDate, endDate, country, province = NULL, simDa
     ))
   }
   # Load functions
-  cat("Compiling functions \n")
+  cat("\nCompiling functions\n")
   RScripts <- paste0("R/", list.files(path = paste0(getwd(), "/R")))
   RScripts <- RScripts[!str_detect(RScripts, "Models")]
   models <- list.files(path = paste0(getwd(), "/R/Models"))
@@ -59,10 +59,11 @@ Init_fctn <- function(model, startDate, endDate, country, province = NULL, simDa
   if (!dir.exists(path)) {
     dir.create(path)
   }
-  cat("Pulling data \n")
+  cat("Pulling data\n")
   # Load the infection data
   jhcsseData <- read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv",
-  col_types = cols())
+    col_types = cols()
+  )
 
   # Subset data specific country and province
   if (!(country %in% jhcsseData$`Country/Region`)) stop("Unknown country name")

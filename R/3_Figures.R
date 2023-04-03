@@ -22,15 +22,14 @@ Figures_fctn <- function(model, modelOutput, dataTib, dataExten, start = startDa
   black <- "#000000"
   grey <- "#525252"
   blue <- "#1874CD"
-  textSize <- 24
+  textSize <- 25
   themeElement <- theme(
     legend.position = "none",
-    legend.text = element_text(size = textSize),
-    axis.text = element_text(size = textSize),
-    axis.title = element_text(size = textSize + 3, vjust = 1),
+    axis.text.y = element_text(size = textSize),
+    axis.text.x = element_text(size = textSize, angle = 30, hjust = 1),
+    axis.title = element_text(size = textSize, vjust = 1),
     panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-    axis.ticks.length = unit(.25, "cm"),
-    axis.ticks = element_line(linewidth = 1)
+    axis.ticks.length = unit(.4, "cm")
   )
 
   #---------------------------------------------------------------------------------------#
@@ -42,26 +41,26 @@ Figures_fctn <- function(model, modelOutput, dataTib, dataExten, start = startDa
   covidInfections <- dataExten %>%
     filter(Date <= end & !is.na(logI) & !is.infinite(logI)) %>%
     ggplot() +
-    geom_line(aes(x = Date, y = logI, colour = "log i"), linewidth = 0.75) +
+    geom_line(aes(x = Date, y = logI, colour = "log i"), linewidth = .5) +
     geom_line(aes(
       x = Date, y = I / (max(I, na.rm = T) / max(logI, na.rm = T)),
       colour = "i"
-    ), linewidth = 0.75) +
-    geom_vline(xintercept = as.Date(start), color = grey, linetype = 2, linewidth = 1) +
+    ), linewidth = .75) +
+    geom_vline(xintercept = as.Date(start), color = grey, linetype = 2, linewidth = .5) +
     scale_y_continuous(
       name = expression(paste(log, "(", i[t], ")")),
       breaks = seq(0, 14, by = 2),
       sec.axis = sec_axis(~ . * (max(dataTib$I, na.rm = T) / max(dataTib$logI, na.rm = T)),
-        labels = scales::comma_format(big.mark = ".", decimal.mark = ","),
+        labels = scales::comma_format(big.mark = ",", decimal.mark = "."),
         name = expression(i[t]), breaks = seq(0, 14e+05, by = 2e+05)
       )
     ) +
     scale_color_manual(values = colors_1) +
     theme_bw() +
     labs(colour = "") +
-    scale_x_date(date_breaks = "5 months", date_labels = c("%m.%Y"), name = "") +
+    scale_x_date(date_breaks = "4 months", date_labels = c("%b %Y"), name = "") +
     themeElement
-  ggsave(covidInfections, filename = paste0(path, "Fig_Infections.png"), height = 8, width = 14)
+  ggsave(covidInfections, filename = paste0(path, "Fig_Infections.pdf"), height = 8, width = 14)
 
   #---------------------------------------------------------------------------------------#
   # Figure 2: Grid search parameter identification                                     ####
@@ -98,13 +97,12 @@ Figures_fctn <- function(model, modelOutput, dataTib, dataExten, start = startDa
       axis.ticks.x = element_blank(),
       axis.text.x = element_blank(),
       axis.text.y = element_text(size = textSize),
-      axis.title = element_text(size = textSize + 3),
+      axis.title = element_text(size = textSize),
       strip.text = element_text(size = textSize),
       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      axis.ticks.length = unit(.25, "cm"),
-      axis.ticks = element_line(linewidth = 1)
+      axis.ticks.length = unit(.4, "cm")
     )
-  ggsave(gridSearch, filename = paste0(path, "Fig_GridSearch.png"), height = 5, width = 14)
+  ggsave(gridSearch, filename = paste0(path, "Fig_GridSearch.pdf"), height = 5, width = 14)
 
   #---------------------------------------------------------------------------------------#
   # Figure 3: Regimes and trend                                                        ####
@@ -115,8 +113,8 @@ Figures_fctn <- function(model, modelOutput, dataTib, dataExten, start = startDa
   nRegime <- 1 + NCOL(outputTib[, str_detect(colnames(outputTib), "Smoother_Pr_S")])
   regimeProbs <- outputTib %>%
     ggplot() +
-    geom_line(aes(x = Date, y = Data, colour = "Data"), linewidth = 0.7) +
-    geom_line(aes(x = Date, y = Trend, colour = "Trend"), linewidth = 1) +
+    geom_line(aes(x = Date, y = Data, colour = "Data"), linewidth = .5) +
+    geom_line(aes(x = Date, y = Trend, colour = "Trend"), linewidth = .75) +
     geom_line(aes(x = Date, y = Smoother_Pr_S_0 * max(Data, na.rm = T), colour = "Pr regime 1"), linewidth = 1) +
     geom_rect(
       data = smootherRegimeIndicatorTib, inherit.aes = F,
@@ -135,13 +133,13 @@ Figures_fctn <- function(model, modelOutput, dataTib, dataExten, start = startDa
     scale_color_manual(values = colors_3) +
     theme_bw() +
     labs(colour = "") +
-    scale_x_date(date_breaks = "5 months", date_labels = c("%m.%Y"), name = "") +
+    scale_x_date(date_breaks = "4 months", date_labels = c("%b %Y"), name = "") +
     themeElement
   if (nRegime == 3) {
     regimeProbs <- regimeProbs +
       geom_line(aes(x = Date, y = Smoother_Pr_S_2 * max(Data, na.rm = T), colour = "Pr regime 2"), linewidth = 1)
   }
-  ggsave(regimeProbs, filename = paste0(path, "Fig_Regimes.png"), height = 8, width = 14)
+  ggsave(regimeProbs, filename = paste0(path, "Fig_Regimes.pdf"), height = 8, width = 14)
 
   #---------------------------------------------------------------------------------------#
   # Figure 4: Nowcasting                                                               ####
@@ -151,8 +149,8 @@ Figures_fctn <- function(model, modelOutput, dataTib, dataExten, start = startDa
   # Construct and save the plot
   nowcasting <- outputTib %>%
     ggplot() +
-    geom_line(aes(x = Date, y = Smoother_Pr_S_0, color = "Smoother"), linewidth = 1) +
-    geom_line(aes(x = Date, y = Filter_Pr_S_0, color = "Filter"), linewidth = 1) +
+    geom_line(aes(x = Date, y = Smoother_Pr_S_0, color = "Smoother"), linewidth = .75) +
+    geom_line(aes(x = Date, y = Filter_Pr_S_0, color = "Filter"), linewidth = .75) +
     geom_rect(
       data = filterRegimeIndicatorTib, inherit.aes = F,
       aes(ymin = 0, ymax = 1, xmin = Date, xmax = End),
@@ -170,9 +168,9 @@ Figures_fctn <- function(model, modelOutput, dataTib, dataExten, start = startDa
     ) +
     theme_bw() +
     labs(colour = "") +
-    scale_x_date(date_breaks = "5 months", date_labels = c("%m.%Y"), name = "") +
+    scale_x_date(date_breaks = "4 months", date_labels = c("%b %Y"), name = "") +
     themeElement
-  ggsave(nowcasting, filename = paste0(path, "Fig_Nowcasting.png"), height = 8, width = 14)
+  ggsave(nowcasting, filename = paste0(path, "Fig_Nowcasting.pdf"), height = 8, width = 14)
 
   #---------------------------------------------------------------------------------------#
   # Figure 5: Simulated seasonal unit root                                             ####
@@ -181,7 +179,9 @@ Figures_fctn <- function(model, modelOutput, dataTib, dataExten, start = startDa
   seasSimTib <- seasVecSim_fctn(omegaSd = 1, periods = 100, nIters = 100)
   seasVecSimulation <- seasSimTib %>%
     ggplot() +
-    geom_line(aes(x = Periods, y = Gamma, group = Iteration), linewidth = .3, color = grey) +
+    geom_line(aes(x = Periods, y = Gamma, group = Iteration),
+      linewidth = .5, color = grey
+    ) +
     geom_line(
       data = filter(seasSimTib, Iteration == 1),
       aes(x = Periods, y = Gamma),
@@ -190,16 +190,15 @@ Figures_fctn <- function(model, modelOutput, dataTib, dataExten, start = startDa
     theme_bw() +
     theme(
       legend.position = "none",
-      legend.text = element_text(size = textSize),
-      axis.text = element_text(size = textSize),
-      axis.title = element_text(size = textSize + 3, vjust = 1),
+      axis.text.y = element_text(size = textSize),
+      axis.text.x = element_text(size = textSize),
+      axis.title = element_text(size = textSize, vjust = 1),
       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      axis.ticks.length = unit(.25, "cm"),
-      axis.ticks = element_line(linewidth = 1)
+      axis.ticks.length = unit(.4, "cm")
     ) +
-    scale_y_continuous(name = expression(gamma[t]^"UR")) +
+    scale_y_continuous(name = expression(gamma[t]^"UR"), breaks = seq(-150, 150, 50)) +
     scale_x_continuous(name = "")
-  ggsave(seasVecSimulation, filename = paste0(path, "seasSim.png"), height = 8, width = 14)
+  ggsave(seasVecSimulation, filename = paste0(path, "seasSim.pdf"), height = 8, width = 14)
 }
 
 
@@ -254,15 +253,14 @@ ComparisonPlot_fctn <- function(data = dataVec, trendIni = trendIni, dataTib = d
   black <- "#000000"
   grey <- "#525252"
   blue <- "#1874CD"
-  textSize <- 24
+  textSize <- 25
   themeElement <- theme(
     legend.position = "none",
-    legend.text = element_text(size = textSize),
-    axis.text = element_text(size = textSize),
-    axis.title = element_text(size = textSize + 3, vjust = 1),
+    axis.text.y = element_text(size = textSize),
+    axis.text.x = element_text(size = textSize, angle = 30, hjust = 1),
+    axis.title = element_text(size = textSize, vjust = 1),
     panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-    axis.ticks.length = unit(.25, "cm"),
-    axis.ticks = element_line(linewidth = 1)
+    axis.ticks.length = unit(.4, "cm")
   )
 
   colors <- c(
@@ -270,6 +268,7 @@ ComparisonPlot_fctn <- function(data = dataVec, trendIni = trendIni, dataTib = d
     "GibbsProb" = blue, "GibbsTrend" = blue
   )
   # Construct and save the plot
+
   regimeProbs <- outputTib %>%
     ggplot() +
     geom_line(aes(x = Date, y = UCTrend, colour = "UCTrend"), linewidth = 1, linetype = 3) +
@@ -290,7 +289,7 @@ ComparisonPlot_fctn <- function(data = dataVec, trendIni = trendIni, dataTib = d
     scale_color_manual(values = colors) +
     theme_bw() +
     labs(colour = "") +
-    scale_x_date(date_breaks = "5 months", date_labels = c("%m.%Y"), name = "") +
+    scale_x_date(date_breaks = "4 months", date_labels = c("%b %Y"), name = "") +
     themeElement
   ggsave(regimeProbs, filename = paste0(path, "Fig_Comparison.pdf"), height = 8, width = 14)
 }
