@@ -46,7 +46,7 @@ $\gamma^{UR}_t = -\sum^6_{j=1} \gamma^{UR}_{t-j} + x_t, \quad (1 - L^7) x_t = \o
 
 Furthermore, we consider a regime process that incorporates a **third state** $S_t = 2$, which is characterized by $\nu_t = 0$ during time periods where this state is active.
 
-Lastly, even though not shown in the paper, we investigate specifications that allow for endogeneity between the trend and regime processes,  regime-dependent heteroscedasticity in either the innovations $\xi_t$ or $\eta_t$, as well as a model where a second independent Markov chain $S_t^*$ governs this regime-induced innovation heteroscedasticity.
+Lastly, even though not shown in the paper, we investigate specifications that (i) allow for endogeneity between the trend and regime processes, (ii) regime-dependent heteroscedasticity in either $\xi_t$ or $\eta_t$, as well as (iii) a model where a second independent Markov chain $S_t^*$ governs this regime-induced innovation heteroscedasticity.
 
 Turning to the endogenous specification, innovations to the trend and regime processes may exhibit a non-zero correlation $\rho$ as proposed in [Kim et al. (2008)](#Kim); [Kang (2014)](#Kang). For a previous contribution that employs regime dependent heteroscedasticity, i.e. $\sigma^2_{\xi, S_t^*} = S_t^* \sigma^2_{\xi, S_t^*=1} + (1 - S_t^*) \sigma^2_{\xi, S_t^*=0}$ where $S_t^*$ may or may not equal $S_t$ (same applying to $\sigma^2_{\eta, S_t^*}$), we refer to [Engel and Kim (1999)](#Engel).
 
